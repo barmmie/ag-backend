@@ -16,21 +16,21 @@ ActiveRecord::Schema.define(version: 20171228081649) do
   enable_extension "plpgsql"
 
   create_table "events", force: :cascade do |t|
-    t.string   "title"
-    t.string   "artist"
-    t.jsonb    "overrides"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "title",                   null: false
+    t.string   "artist",                  null: false
+    t.jsonb    "overrides",  default: {}
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "tickets", force: :cascade do |t|
     t.integer  "event_id"
-    t.decimal  "price",      precision: 8, scale: 2
-    t.integer  "quantity"
-    t.string   "source"
-    t.json     "splits"
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.decimal  "price",      precision: 8, scale: 2,              null: false
+    t.integer  "quantity",                                        null: false
+    t.string   "source",                                          null: false
+    t.json     "splits",                             default: {}
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
     t.index ["event_id"], name: "index_tickets_on_event_id", using: :btree
   end
 
