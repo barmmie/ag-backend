@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171228081649) do
+ActiveRecord::Schema.define(version: 20171228095739) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20171228081649) do
     t.decimal  "price",      precision: 8, scale: 2,              null: false
     t.integer  "quantity",                                        null: false
     t.string   "source",                                          null: false
-    t.json     "splits",                             default: {}
+    t.json     "splits",                             default: []
     t.datetime "created_at",                                      null: false
     t.datetime "updated_at",                                      null: false
     t.index ["event_id"], name: "index_tickets_on_event_id", using: :btree
