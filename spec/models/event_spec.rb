@@ -11,7 +11,6 @@ RSpec.describe Event, type: :model do
 
     it 'succeeds in returning only events that send order emails' do
       enabled_events = Event.email_enabled
-
       3.times do
         expect(enabled_events).to include @can_send_emails.sample
       end
@@ -60,15 +59,15 @@ RSpec.describe Event, type: :model do
     end
 
     it 'succeeds in returning events with more than 2 tickets, successfully' do
-      expect(Event.tickets_more_than(2).count).to eql 3
+      expect(Event.tickets_more_than(2).length).to eql 2
     end
 
     it 'succeeds in returning events with all ticket prices less than 20, successfully' do
-      expect(Event.ticket_prices_less_than(20).count).to eql 1
+      expect(Event.ticket_prices_less_than(20).length).to eql 1
     end
 
     it 'succeeds in returning events with exactly 5 tickets, successfully' do
-      expect(Event.ticket_count_exactly(5).count).to eql 1
+      expect(Event.ticket_count_exactly(5).length).to eql 1
     end
   end
 end
