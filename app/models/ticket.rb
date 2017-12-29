@@ -4,54 +4,60 @@ class Ticket < ApplicationRecord
 
   validates :quantity, :price, :source, :event, presence: true
   
-  def satisfies_split_vector(quantity)
-    splits.any? { |split| quantity % split == 0 }
-  end
-  
   def max_split_buyable(amount)
-    splits = []
-    remaining_amount = amount
-    while remaining_amount != 0
-      split = get_highest_split(remaining_amount)
-      splits << split
-      remaining_amount = remaining_amount - split
-    end
-   ( splits.count > 0) ? splits.max : 0 
-  end
-  
-  def get_highest_split(amount)
     
-    available_splits = splits.sort.reverse
-    index = 0
-    split = available_splits[index]
-    until amount >= split
-       index = index + 1
-       split = available_splits[index]
+    if quantity == amount
+      return amount
     end
-    
-    split
-  end
   
-  def self.get_cheapest (tickets, quantity)
-    cheapest = nil
-    tickets.each do |ticket|
-      puts quantity
-      max_buyable = ticket.max_split_buyable(quantity)
-      
-      quantity_bought = quantity - max_buyable
-      
-      cost = ticket.price * quantity_bought
-      
-      quantity_left = quantity - quantity_bought
-      
-      if quantity_left > 0
-        cost = cost + get_cheapest(tickets, quantity_left)
+    sorted_splits = splits.sort_by {|v| -v} 
+  
+    available = 0
+  
+    min_quantity = [quantity, amount].min
+  
+    for split in sorted_splits do
+      while available + split <= min_quantity
+        available += split
       end
-      if ( cheapest.nil? or cheapest > cost)
-        cheapest = cost
+      if available == min_quantity
+        break
       end
     end
+  
+    available
+  end
+
+  
+  def self.get_cheapest (tickets, requested_quantity)
+    total_bought = 0
+    chosen_tickets = []
+    tickets.sort_by {|ticket| ticket.price}.each do |ticket|
+      if total_bought == requested_quantity
+        break;
+      end
+      
+      current_requested_quantity = requested_quantity - total_bought
+        
+      available_quantity = ticket.max_split_buyable(current_requested_quantity)
     
-    cheapest
+      if available_quantity.nil? || available_quantity == 0
+        next
+      end
+      
+      chosen_tickets.push({
+        :id => ticket.id,
+        :price => ticket.price,
+        :cost => ticket.price * available_quantity,
+        :quantity => available_quantity
+      })
+
+      ticket.quantity = ticket.quantity - available_quantity
+
+      total_bought += available_quantity
+    end
+    
+   cheapest = chosen_tickets.inject(0){|sum,ticket| sum + ticket[:cost] }
+   cheapest
   end
 end
